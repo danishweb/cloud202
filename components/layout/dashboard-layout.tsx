@@ -15,6 +15,7 @@ import {
   Settings,
   ShieldCheck
 } from "lucide-react";
+import { AppSidebar } from "./app-sidebar";
 
 type NavItem = {
   title: string;
@@ -24,12 +25,12 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    title: "Basic config",
+    title: "Basic Configuration",
     href: "/config/basic",
     icon: <Settings className="w-4 h-4 mr-2" />,
   },
   {
-    title: "RAG",
+    title: "RAG Configuration",
     href: "/config/rag",
     icon: <FileCode className="w-4 h-4 mr-2" />,
   },
@@ -39,7 +40,7 @@ const navItems: NavItem[] = [
     icon: <GitBranch className="w-4 h-4 mr-2" />,
   },
   {
-    title: "Security Overview",
+    title: "Security",
     href: "/config/security",
     icon: <ShieldCheck className="w-4 h-4 mr-2" />,
   },
@@ -65,58 +66,51 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
   const canAccessSecurity = canAccessWorkflows && isWorkflowsStepValid();
   const canAccessOverview = canAccessSecurity && isSecurityStepValid();
 
+  // Create a filtered list of nav items with accessibility information
+  const processedNavItems = navItems.map(item => {
+    // Determine if the step is accessible
+    const isAccessible =
+      item.href === "/config/basic" ||
+      (item.href === "/config/rag" && canAccessRag) ||
+      (item.href === "/config/workflows" && canAccessWorkflows) ||
+      (item.href === "/config/security" && canAccessSecurity) ||
+      (item.href === "/config/overview" && canAccessOverview);
+
+    return {
+      ...item,
+      isAccessible,
+      // If not accessible, replace the icon with a lock
+      displayIcon: isAccessible ? item.icon : <Lock className="w-4 h-4 mr-2" />,
+    };
+  });
+
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <div className="w-64 border-r bg-background">
-        <div className="flex items-center p-4 border-b"></div>
+    <div className="flex flex-col md:flex-row min-h-screen">
+      {/* Sidebar with validation logic */}
+      <div className="hidden md:block">
+        <AppSidebar 
+          navItems={processedNavItems.map(item => ({
+            title: item.title,
+            href: item.isAccessible ? item.href : "#",
+            icon: item.displayIcon,
+            disabled: !item.isAccessible,
+          }))} 
+          className="shrink-0" 
+        />
+      </div>
 
-        <div className="p-4">
-          <div className="text-sm font-medium text-muted-foreground mb-2">
-            Configuration Steps
-          </div>
-          <nav className="space-y-1">
-            {navItems.map((item) => {
-              // Determine if the step is accessible
-              const isAccessible =
-                item.href === "/config/basic" ||
-                (item.href === "/config/rag" && canAccessRag) ||
-                (item.href === "/config/workflows" && canAccessWorkflows) ||
-                (item.href === "/config/security" && canAccessSecurity) ||
-                (item.href === "/config/overview" && canAccessOverview);
-
-              return isAccessible ? (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center px-3 py-2 text-sm rounded-md",
-                    pathname === item.href
-                      ? "bg-primary/10 text-primary font-medium"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                  )}
-                >
-                  {item.icon}
-                  {item.title}
-                </Link>
-              ) : (
-                <div
-                  key={item.href}
-                  className="flex items-center px-3 py-2 text-sm rounded-md text-muted-foreground/40 cursor-not-allowed"
-                >
-                  <Lock className="w-4 h-4 mr-2" />
-                  {item.title}
-                </div>
-              );
-            })}
-          </nav>
-        </div>
+      {/* Mobile sidebar without validation to ensure users can navigate */}
+      <div className="md:hidden">
+        <AppSidebar 
+          navItems={navItems} 
+          className="shrink-0" 
+        />
       </div>
 
       {/* Main content */}
-      <div className="flex-1">
-        <main className="p-6">{children}</main>
-      </div>
+      <main className="flex-1 p-4 md:p-8 pt-16 md:pt-8 transition-all duration-200 ease-in-out">
+        {children}
+      </main>
     </div>
   );
 }

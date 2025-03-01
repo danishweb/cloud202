@@ -8,8 +8,8 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, className }: PageHeaderProps) {
   return (
-    <div className={cn("p-4 mb-4 bg-muted-foreground text-white rounded-md", className)}>
-      <h1 className="text-xl font-semibold">{title}</h1>
+    <div className={cn("p-3 md:p-4 mb-4 bg-muted-foreground text-white rounded-md", className)}>
+      <h1 className="text-lg md:text-xl font-semibold">{title}</h1>
     </div>
   );
 }

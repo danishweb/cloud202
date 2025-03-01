@@ -81,7 +81,7 @@ export default function OverviewPage() {
       <PageHeader title="Configuration Overview" />
 
       {isSubmitted ? (
-        <div className="bg-green-50 border border-green-200 rounded-md p-6 flex flex-col items-center justify-center space-y-4">
+        <div className="bg-green-50 border border-green-200 rounded-md p-4 md:p-6 flex flex-col items-center justify-center space-y-4">
           <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
             <Check className="h-6 w-6 text-green-600" />
           </div>
@@ -100,177 +100,88 @@ export default function OverviewPage() {
                 router.push("/config/basic");
               }}
             >
-              <ArrowRight className="mr-2 h-4 w-4" />
-              Start New Configuration
+              Start New Configuration Now
             </Button>
           </div>
         </div>
       ) : (
-        <FormContainer
-          prevHref="/config/security"
-          onPrev={handlePrev}
+        <FormContainer 
+          prevHref="/config/security" 
           customNextButton={
             <Button 
               onClick={handleSubmit} 
-              className="bg-green-600 hover:bg-green-700 text-white"
               disabled={isLoading}
+              className="w-full sm:w-auto"
             >
               {isLoading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Saving...
+                  <span className="mr-2">Saving...</span>
+                  <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 </>
               ) : (
                 <>
-                  <Check className="mr-2 h-4 w-4" />
-                  Save Configuration
+                  <span className="mr-2">Save Configuration</span>
+                  <ArrowRight className="h-4 w-4" />
                 </>
               )}
             </Button>
           }
+          onPrev={handlePrev}
         >
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">
+            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-md text-red-800 text-sm">
               <p className="font-medium">Error saving configuration:</p>
               <p>{error}</p>
             </div>
           )}
           
           <div className="space-y-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-medium">Configuration Summary</h2>
-              <div className="text-sm text-muted-foreground">
-                Review your configuration before saving
+            <div className="bg-muted/10 p-4 rounded-md border">
+              <div className="flex items-center gap-2 mb-2">
+                <Settings className="h-5 w-5 text-primary" />
+                <h3 className="font-medium">Basic Configuration</h3>
+              </div>
+              <div className="ml-7 space-y-1 text-sm">
+                <p><span className="font-medium">App Name:</span> {formState.basic.appName}</p>
+                <p><span className="font-medium">Description:</span> {formState.basic.description}</p>
               </div>
             </div>
-
-            <div className="space-y-4">
-              <div className="p-4 border rounded-md bg-muted/20">
-                <div className="flex items-center gap-2 mb-3">
-                  <Settings className="w-5 h-5 text-primary" />
-                  <h3 className="font-medium">Basic Configuration</h3>
-                  <div className="ml-auto">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => router.push("/config/basic")}
-                    >
-                      Edit
-                    </Button>
-                  </div>
-                </div>
-                <div className="pl-7 space-y-2">
-                  <div className="grid grid-cols-2 text-sm">
-                    <span className="text-muted-foreground">App Name:</span>
-                    <span>{formState.basic.appName || "Not set"}</span>
-                  </div>
-                  <div className="grid grid-cols-2 text-sm">
-                    <span className="text-muted-foreground">Description:</span>
-                    <span>{formState.basic.description || "Not set"}</span>
-                  </div>
-                </div>
+            
+            <div className="bg-muted/10 p-4 rounded-md border">
+              <div className="flex items-center gap-2 mb-2">
+                <Database className="h-5 w-5 text-primary" />
+                <h3 className="font-medium">RAG Configuration</h3>
               </div>
-
-              <div className="p-4 border rounded-md bg-muted/20">
-                <div className="flex items-center gap-2 mb-3">
-                  <Database className="w-5 h-5 text-primary" />
-                  <h3 className="font-medium">RAG Configuration</h3>
-                  <div className="ml-auto">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => router.push("/config/rag")}
-                    >
-                      Edit
-                    </Button>
-                  </div>
-                </div>
-                <div className="pl-7 space-y-2">
-                  <div className="grid grid-cols-2 text-sm">
-                    <span className="text-muted-foreground">Knowledge Base:</span>
-                    <span>{formState.rag.knowledgeBaseName || "Not set"}</span>
-                  </div>
-                  <div className="grid grid-cols-2 text-sm">
-                    <span className="text-muted-foreground">Pattern:</span>
-                    <span>{formState.rag.pattern || "Not set"}</span>
-                  </div>
-                  <div className="grid grid-cols-2 text-sm">
-                    <span className="text-muted-foreground">Embeddings:</span>
-                    <span>{formState.rag.embeddings || "Not set"}</span>
-                  </div>
-                  <div className="grid grid-cols-2 text-sm">
-                    <span className="text-muted-foreground">Vector DB:</span>
-                    <span>{formState.rag.vectorDb || "Not set"}</span>
-                  </div>
-                  <div className="grid grid-cols-2 text-sm">
-                    <span className="text-muted-foreground">Configurations:</span>
-                    <div>
-                      {formState.rag.configurations && formState.rag.configurations.length > 0 ? (
-                        <div className="space-y-1">
-                          {formState.rag.configurations.map((config, index) => (
-                            <div key={index} className="flex flex-wrap gap-1">
-                              {Object.entries(config).map(([key, value]) => (
-                                <span key={key} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-muted">
-                                  <span className="font-medium">{key}:</span> {value}
-                                </span>
-                              ))}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <span>No additional configurations</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
+              <div className="ml-7 space-y-1 text-sm">
+                <p><span className="font-medium">Knowledge Base:</span> {formState.rag.knowledgeBaseName}</p>
+                <p><span className="font-medium">Description:</span> {formState.rag.description}</p>
+                {formState.rag.pattern && <p><span className="font-medium">Pattern:</span> {formState.rag.pattern}</p>}
+                {formState.rag.embeddings && <p><span className="font-medium">Embeddings:</span> {formState.rag.embeddings}</p>}
+                {formState.rag.metrics && <p><span className="font-medium">Metrics:</span> {formState.rag.metrics}</p>}
+                {formState.rag.chunking && <p><span className="font-medium">Chunking:</span> {formState.rag.chunking}</p>}
+                <p><span className="font-medium">Vector DB:</span> {formState.rag.vectorDb}</p>
               </div>
-
-              <div className="p-4 border rounded-md bg-muted/20">
-                <div className="flex items-center gap-2 mb-3">
-                  <GitBranch className="w-5 h-5 text-primary" />
-                  <h3 className="font-medium">Workflows</h3>
-                  <div className="ml-auto">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => router.push("/config/workflows")}
-                    >
-                      Edit
-                    </Button>
-                  </div>
-                </div>
-                <div className="pl-7 space-y-2">
-                  <div className="text-sm flex items-center gap-2">
-                    <span className="text-muted-foreground">Status:</span>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-muted/50">
-                      No workflows required
-                    </span>
-                  </div>
-                </div>
+            </div>
+            
+            <div className="bg-muted/10 p-4 rounded-md border">
+              <div className="flex items-center gap-2 mb-2">
+                <GitBranch className="h-5 w-5 text-primary" />
+                <h3 className="font-medium">Workflows</h3>
               </div>
-
-              <div className="p-4 border rounded-md bg-muted/20">
-                <div className="flex items-center gap-2 mb-3">
-                  <ShieldCheck className="w-5 h-5 text-primary" />
-                  <h3 className="font-medium">Security</h3>
-                  <div className="ml-auto">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => router.push("/config/security")}
-                    >
-                      Edit
-                    </Button>
-                  </div>
-                </div>
-                <div className="pl-7 space-y-2">
-                  <div className="text-sm flex items-center gap-2">
-                    <span className="text-muted-foreground">Status:</span>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-muted/50">
-                      No security configuration required
-                    </span>
-                  </div>
-                </div>
+              <div className="ml-7 space-y-1 text-sm">
+                <p><span className="font-medium">Selected Workflows:</span> {formState.workflows.selectedWorkflows.join(", ") || "None"}</p>
+              </div>
+            </div>
+            
+            <div className="bg-muted/10 p-4 rounded-md border">
+              <div className="flex items-center gap-2 mb-2">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                <h3 className="font-medium">Security</h3>
+              </div>
+              <div className="ml-7 space-y-1 text-sm">
+                <p><span className="font-medium">Encryption:</span> {formState.security.enableEncryption ? "Enabled" : "Disabled"}</p>
+                <p><span className="font-medium">Audit:</span> {formState.security.enableAudit ? "Enabled" : "Disabled"}</p>
+                <p><span className="font-medium">RBAC:</span> {formState.security.enableRBAC ? "Enabled" : "Disabled"}</p>
               </div>
             </div>
           </div>

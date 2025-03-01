@@ -27,15 +27,16 @@ export function FormContainer({
   const router = useRouter();
 
   return (
-    <div className={cn("bg-card rounded-md border shadow-sm", className)}>
-      <div className="p-6">{children}</div>
+    <div className={cn("bg-card rounded-md border shadow-sm w-full", className)}>
+      <div className="p-4 md:p-6">{children}</div>
 
-      <div className="p-4 bg-muted/20 border-t flex justify-between">
+      <div className="p-4 bg-muted/20 border-t flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
         {customPrevButton ? (
           customPrevButton
         ) : prevHref || onPrev ? (
           <Button
             variant="secondary"
+            className="w-full sm:w-auto order-2 sm:order-1"
             onClick={() => {
               if (onPrev) {
                 onPrev();
@@ -47,13 +48,14 @@ export function FormContainer({
             Previous
           </Button>
         ) : (
-          <div></div> // Empty div to maintain flex layout
+          <div className="order-2 sm:order-1"></div> // Empty div to maintain flex layout
         )}
 
         {customNextButton ? (
           customNextButton
         ) : nextHref || onNext ? (
           <Button
+            className="w-full sm:w-auto order-1 sm:order-2"
             onClick={() => {
               if (onNext) {
                 onNext();
@@ -66,7 +68,7 @@ export function FormContainer({
             {nextHref === undefined && onNext ? "Submit" : "Next"}
           </Button>
         ) : (
-          <div></div> // Empty div to maintain flex layout
+          <div className="order-1 sm:order-2"></div> // Empty div to maintain flex layout
         )}
       </div>
     </div>
