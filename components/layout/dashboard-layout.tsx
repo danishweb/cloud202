@@ -1,9 +1,6 @@
 "use client";
 
 import { useFormContext } from "@/lib/form-context";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 
 // Icons
@@ -13,7 +10,7 @@ import {
   GitBranch,
   Lock,
   Settings,
-  ShieldCheck
+  ShieldCheck,
 } from "lucide-react";
 import { AppSidebar } from "./app-sidebar";
 
@@ -52,7 +49,6 @@ const navItems: NavItem[] = [
 ];
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
   const {
     isBasicStepValid,
     isRagStepValid,
@@ -67,7 +63,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
   const canAccessOverview = canAccessSecurity && isSecurityStepValid();
 
   // Create a filtered list of nav items with accessibility information
-  const processedNavItems = navItems.map(item => {
+  const processedNavItems = navItems.map((item) => {
     // Determine if the step is accessible
     const isAccessible =
       item.href === "/config/basic" ||
@@ -88,23 +84,20 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
     <div className="flex flex-col md:flex-row min-h-screen">
       {/* Sidebar with validation logic */}
       <div className="hidden md:block">
-        <AppSidebar 
-          navItems={processedNavItems.map(item => ({
+        <AppSidebar
+          navItems={processedNavItems.map((item) => ({
             title: item.title,
             href: item.isAccessible ? item.href : "#",
             icon: item.displayIcon,
             disabled: !item.isAccessible,
-          }))} 
-          className="shrink-0" 
+          }))}
+          className="shrink-0"
         />
       </div>
 
       {/* Mobile sidebar without validation to ensure users can navigate */}
       <div className="md:hidden">
-        <AppSidebar 
-          navItems={navItems} 
-          className="shrink-0" 
-        />
+        <AppSidebar navItems={navItems} className="shrink-0" />
       </div>
 
       {/* Main content */}
