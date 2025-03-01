@@ -2,8 +2,7 @@
 
 import { useFormContext } from "@/lib/form-context";
 import { ReactNode } from "react";
-
-// Icons
+ 
 import {
   Eye,
   FileCode,
@@ -55,16 +54,13 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
     isWorkflowsStepValid,
     isSecurityStepValid,
   } = useFormContext();
-
-  // Logic to determine which steps are available based on form completion
+ 
   const canAccessRag = isBasicStepValid();
   const canAccessWorkflows = canAccessRag && isRagStepValid();
   const canAccessSecurity = canAccessWorkflows && isWorkflowsStepValid();
   const canAccessOverview = canAccessSecurity && isSecurityStepValid();
-
-  // Create a filtered list of nav items with accessibility information
-  const processedNavItems = navItems.map((item) => {
-    // Determine if the step is accessible
+ 
+  const processedNavItems = navItems.map((item) => { 
     const isAccessible =
       item.href === "/config/basic" ||
       (item.href === "/config/rag" && canAccessRag) ||
@@ -74,15 +70,14 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
 
     return {
       ...item,
-      isAccessible,
-      // If not accessible, replace the icon with a lock
+      isAccessible, 
       displayIcon: isAccessible ? item.icon : <Lock className="w-4 h-4 mr-2" />,
     };
   });
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
-      {/* Sidebar with validation logic */}
+      {/* Desktop sidebar with validation logic */}
       <div className="hidden md:block">
         <AppSidebar
           navItems={processedNavItems.map((item) => ({
@@ -95,8 +90,8 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
         />
       </div>
 
-      {/* Mobile sidebar without validation to ensure users can navigate */}
-      <div className="md:hidden">
+      {/* Mobile sidebar without validation */}
+      <div className="block md:hidden">
         <AppSidebar navItems={navItems} className="shrink-0" />
       </div>
 

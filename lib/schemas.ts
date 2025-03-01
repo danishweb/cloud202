@@ -127,8 +127,7 @@ export type RagFormValues = z.infer<typeof ragFormSchema>;
 export type WorkflowsFormValues = z.infer<typeof workflowsFormSchema>;
 export type SecurityFormValues = z.infer<typeof securityFormSchema>;
 export type FormValues = z.infer<typeof formSchema>;
-
-// API validation schemas
+ 
 export const createConfigurationSchema = formSchema;
 
 export const updateConfigurationSchema = formSchema.partial();

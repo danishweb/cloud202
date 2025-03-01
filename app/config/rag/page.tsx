@@ -6,7 +6,11 @@ import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
 import { Textarea } from "@/components/ui/textarea";
 import { useFormContext } from "@/lib/form-context";
-import { ragFormSchema, ragSubmissionSchema, type RagFormValues } from "@/lib/schemas";
+import {
+  ragFormSchema,
+  ragSubmissionSchema,
+  type RagFormValues,
+} from "@/lib/schemas";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
@@ -30,7 +34,6 @@ import { Plus } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 
-// Define the data type for RAG configurations
 interface RagConfig {
   kbName: string;
   description: string;
@@ -46,7 +49,6 @@ export default function RagConfigPage() {
   const { formState, updateRag } = useFormContext();
   const [ragConfigs, setRagConfigs] = useState<RagConfig[]>([]);
 
-  // Define columns for the data table
   const columns: ColumnDef<RagConfig>[] = [
     {
       accessorKey: "kbName",
@@ -78,7 +80,6 @@ export default function RagConfigPage() {
     },
   ];
 
-  // Initialize form with react-hook-form and zod validation
   const form = useForm<RagFormValues>({
     resolver: zodResolver(ragFormSchema),
     defaultValues: {
@@ -93,15 +94,15 @@ export default function RagConfigPage() {
     },
   });
 
-  // Load existing values from context when component mounts
   useEffect(() => {
     if (formState.rag) {
       form.reset(formState.rag);
-      
-      // Load existing configurations into the table
-      if (formState.rag.configurations && formState.rag.configurations.length > 0) {
+
+      if (
+        formState.rag.configurations &&
+        formState.rag.configurations.length > 0
+      ) {
         const existingConfigs = formState.rag.configurations.map((config) => {
-          // Type assertion to access properties safely
           const typedConfig = config as Record<string, string>;
           return {
             kbName: typedConfig.kbName || "",
@@ -113,34 +114,26 @@ export default function RagConfigPage() {
             vectorDb: typedConfig.vectorDb || "",
           };
         });
-        
+
         setRagConfigs(existingConfigs);
       }
     }
   }, [form, formState.rag]);
 
-  // Handle form submission
   function onSubmit(data: RagFormValues) {
     try {
-      // Validate with the stricter submission schema
       const result = ragSubmissionSchema.parse(data);
-      
-      // Ensure configurations are included in the submission
       const updatedData = {
         ...result,
         configurations: formState.rag.configurations || [],
       };
-      
-      // Update form context with validated data
+
       updateRag(updatedData);
 
-      // Navigate to next step
       router.push("/config/workflows");
     } catch (error) {
-      // If validation fails, show errors
       console.error("Validation error:", error);
-      
-      // Set form errors
+
       if (error instanceof Error) {
         alert("Please fill out all required fields before proceeding.");
       }
@@ -151,28 +144,25 @@ export default function RagConfigPage() {
     form.handleSubmit(onSubmit)();
   };
 
-  const handlePrev = () => {
-    // Save current form values even if not valid
+  const handlePrev = () => { 
     const currentValues = form.getValues();
     updateRag({
       ...currentValues,
       configurations: formState.rag.configurations || [],
     });
-    
-    // Navigate to previous step
+ 
     router.push("/config/basic");
   };
 
-  const handleAddConfiguration = async () => {
-    // Validate form before adding configuration
+  const handleAddConfiguration = async () => { 
     const isValid = await form.trigger();
     if (!isValid) {
-      return; // Don't proceed if validation fails
+      return;  
     }
-    
+
     const formValues = form.getValues();
 
-    // Add the current form values to the table
+    
     const newConfig: RagConfig = {
       kbName: formValues.knowledgeBaseName,
       description: formValues.description,
@@ -182,12 +172,10 @@ export default function RagConfigPage() {
       metrics: formValues.metrics || "",
       vectorDb: formValues.vectorDb,
     };
-
-    // Update local state for the table
+ 
     const updatedConfigs = [...ragConfigs, newConfig];
     setRagConfigs(updatedConfigs);
-
-    // Convert RagConfig to Record<string, string> for the form state
+ 
     const configRecord: Record<string, string> = {
       kbName: newConfig.kbName,
       description: newConfig.description,
@@ -197,17 +185,12 @@ export default function RagConfigPage() {
       metrics: newConfig.metrics,
       vectorDb: newConfig.vectorDb,
     };
-
-    // Store the configuration in form state
+ 
     updateRag({
       ...formValues,
-      configurations: [
-        ...(formState.rag.configurations || []),
-        configRecord,
-      ],
+      configurations: [...(formState.rag.configurations || []), configRecord],
     });
-    
-    // Reset form fields after adding configuration
+ 
     form.reset({
       knowledgeBaseName: "",
       description: "",
@@ -401,15 +384,17 @@ export default function RagConfigPage() {
                   variant="outline"
                   onClick={handleAddConfiguration}
                   className="flex items-center gap-1"
-                  disabled={!form.formState.isValid || 
-                    !form.getValues().knowledgeBaseName || 
-                    !form.getValues().description || 
-                    !form.getValues().vectorDb}
+                  disabled={
+                    !form.formState.isValid ||
+                    !form.getValues().knowledgeBaseName ||
+                    !form.getValues().description ||
+                    !form.getValues().vectorDb
+                  }
                 >
                   <Plus className="w-4 h-4" />
                   Add Configuration
                 </Button>
-                
+
                 <Button
                   type="button"
                   variant="ghost"

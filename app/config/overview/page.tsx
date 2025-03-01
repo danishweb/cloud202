@@ -27,20 +27,18 @@ export default function OverviewPage() {
     router.push("/config/security");
   };
 
-  // Handle countdown and redirect after successful submission
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    
+
     if (isSubmitted && redirectCountdown > 0) {
       timer = setTimeout(() => {
-        setRedirectCountdown(prev => prev - 1);
+        setRedirectCountdown((prev) => prev - 1);
       }, 1000);
     } else if (isSubmitted && redirectCountdown === 0) {
-      // Reset form and redirect
       resetForm();
       router.push("/config/basic");
     }
-    
+
     return () => {
       if (timer) clearTimeout(timer);
     };
@@ -50,27 +48,27 @@ export default function OverviewPage() {
     try {
       setIsLoading(true);
       setError(null);
-      
-      // Submit the form data to the API
-      const response = await fetch('/api/configurations', {
-        method: 'POST',
+
+      const response = await fetch("/api/configurations", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formState),
       });
-      
+
       const result = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to save configuration');
+        throw new Error(result.error || "Failed to save configuration");
       }
-      
-      // Show success message and start countdown
+
       setIsSubmitted(true);
     } catch (err) {
-      console.error('Error saving configuration:', err);
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      console.error("Error saving configuration:", err);
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +83,9 @@ export default function OverviewPage() {
           <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
             <Check className="h-6 w-6 text-green-600" />
           </div>
-          <h2 className="text-xl font-medium text-green-800">Configuration Saved!</h2>
+          <h2 className="text-xl font-medium text-green-800">
+            Configuration Saved!
+          </h2>
           <p className="text-green-600 text-center">
             Your configuration has been saved successfully to the database.
           </p>
@@ -93,7 +93,7 @@ export default function OverviewPage() {
             <p className="text-sm text-gray-500">
               Redirecting to the start in {redirectCountdown} seconds...
             </p>
-            <Button 
+            <Button
               className="mt-4"
               onClick={() => {
                 resetForm();
@@ -105,11 +105,11 @@ export default function OverviewPage() {
           </div>
         </div>
       ) : (
-        <FormContainer 
-          prevHref="/config/security" 
+        <FormContainer
+          prevHref="/config/security"
           customNextButton={
-            <Button 
-              onClick={handleSubmit} 
+            <Button
+              onClick={handleSubmit}
               disabled={isLoading}
               className="w-full sm:w-auto"
             >
@@ -134,7 +134,7 @@ export default function OverviewPage() {
               <p>{error}</p>
             </div>
           )}
-          
+
           <div className="space-y-6">
             <div className="bg-muted/10 p-4 rounded-md border">
               <div className="flex items-center gap-2 mb-2">
@@ -142,46 +142,93 @@ export default function OverviewPage() {
                 <h3 className="font-medium">Basic Configuration</h3>
               </div>
               <div className="ml-7 space-y-1 text-sm">
-                <p><span className="font-medium">App Name:</span> {formState.basic.appName}</p>
-                <p><span className="font-medium">Description:</span> {formState.basic.description}</p>
+                <p>
+                  <span className="font-medium">App Name:</span>{" "}
+                  {formState.basic.appName}
+                </p>
+                <p>
+                  <span className="font-medium">Description:</span>{" "}
+                  {formState.basic.description}
+                </p>
               </div>
             </div>
-            
+
             <div className="bg-muted/10 p-4 rounded-md border">
               <div className="flex items-center gap-2 mb-2">
                 <Database className="h-5 w-5 text-primary" />
                 <h3 className="font-medium">RAG Configuration</h3>
               </div>
               <div className="ml-7 space-y-1 text-sm">
-                <p><span className="font-medium">Knowledge Base:</span> {formState.rag.knowledgeBaseName}</p>
-                <p><span className="font-medium">Description:</span> {formState.rag.description}</p>
-                {formState.rag.pattern && <p><span className="font-medium">Pattern:</span> {formState.rag.pattern}</p>}
-                {formState.rag.embeddings && <p><span className="font-medium">Embeddings:</span> {formState.rag.embeddings}</p>}
-                {formState.rag.metrics && <p><span className="font-medium">Metrics:</span> {formState.rag.metrics}</p>}
-                {formState.rag.chunking && <p><span className="font-medium">Chunking:</span> {formState.rag.chunking}</p>}
-                <p><span className="font-medium">Vector DB:</span> {formState.rag.vectorDb}</p>
+                <p>
+                  <span className="font-medium">Knowledge Base:</span>{" "}
+                  {formState.rag.knowledgeBaseName}
+                </p>
+                <p>
+                  <span className="font-medium">Description:</span>{" "}
+                  {formState.rag.description}
+                </p>
+                {formState.rag.pattern && (
+                  <p>
+                    <span className="font-medium">Pattern:</span>{" "}
+                    {formState.rag.pattern}
+                  </p>
+                )}
+                {formState.rag.embeddings && (
+                  <p>
+                    <span className="font-medium">Embeddings:</span>{" "}
+                    {formState.rag.embeddings}
+                  </p>
+                )}
+                {formState.rag.metrics && (
+                  <p>
+                    <span className="font-medium">Metrics:</span>{" "}
+                    {formState.rag.metrics}
+                  </p>
+                )}
+                {formState.rag.chunking && (
+                  <p>
+                    <span className="font-medium">Chunking:</span>{" "}
+                    {formState.rag.chunking}
+                  </p>
+                )}
+                <p>
+                  <span className="font-medium">Vector DB:</span>{" "}
+                  {formState.rag.vectorDb}
+                </p>
               </div>
             </div>
-            
+
             <div className="bg-muted/10 p-4 rounded-md border">
               <div className="flex items-center gap-2 mb-2">
                 <GitBranch className="h-5 w-5 text-primary" />
                 <h3 className="font-medium">Workflows</h3>
               </div>
               <div className="ml-7 space-y-1 text-sm">
-                <p><span className="font-medium">Selected Workflows:</span> {formState.workflows.selectedWorkflows.join(", ") || "None"}</p>
+                <p>
+                  <span className="font-medium">Selected Workflows:</span>{" "}
+                  {formState.workflows.selectedWorkflows.join(", ") || "None"}
+                </p>
               </div>
             </div>
-            
+
             <div className="bg-muted/10 p-4 rounded-md border">
               <div className="flex items-center gap-2 mb-2">
                 <ShieldCheck className="h-5 w-5 text-primary" />
                 <h3 className="font-medium">Security</h3>
               </div>
               <div className="ml-7 space-y-1 text-sm">
-                <p><span className="font-medium">Encryption:</span> {formState.security.enableEncryption ? "Enabled" : "Disabled"}</p>
-                <p><span className="font-medium">Audit:</span> {formState.security.enableAudit ? "Enabled" : "Disabled"}</p>
-                <p><span className="font-medium">RBAC:</span> {formState.security.enableRBAC ? "Enabled" : "Disabled"}</p>
+                <p>
+                  <span className="font-medium">Encryption:</span>{" "}
+                  {formState.security.enableEncryption ? "Enabled" : "Disabled"}
+                </p>
+                <p>
+                  <span className="font-medium">Audit:</span>{" "}
+                  {formState.security.enableAudit ? "Enabled" : "Disabled"}
+                </p>
+                <p>
+                  <span className="font-medium">RBAC:</span>{" "}
+                  {formState.security.enableRBAC ? "Enabled" : "Disabled"}
+                </p>
               </div>
             </div>
           </div>
